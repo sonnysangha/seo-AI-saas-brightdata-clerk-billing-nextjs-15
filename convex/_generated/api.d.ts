@@ -13,8 +13,11 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as chatMessages from "../chatMessages.js";
+import type * as chatSessions from "../chatSessions.js";
 import type * as http from "../http.js";
 import type * as scrapingJobs from "../scrapingJobs.js";
+import type * as seoReportProcessor from "../seoReportProcessor.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -25,8 +28,11 @@ import type * as scrapingJobs from "../scrapingJobs.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  chatMessages: typeof chatMessages;
+  chatSessions: typeof chatSessions;
   http: typeof http;
   scrapingJobs: typeof scrapingJobs;
+  seoReportProcessor: typeof seoReportProcessor;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,
