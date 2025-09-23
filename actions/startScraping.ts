@@ -5,8 +5,10 @@ import { buildPerplexityPrompt } from "@/prompts/perplexity";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "@/convex/_generated/api";
 
-if (!process.env.BRIGHTDATA_API_KEY) {
-  throw new Error("BRIGHTDATA_API_KEY is not set");
+// Environment check - only throw during runtime, not build time
+const BRIGHTDATA_API_KEY = process.env.BRIGHTDATA_API_KEY;
+if (!BRIGHTDATA_API_KEY && typeof window === 'undefined' && process.env.NODE_ENV !== 'production') {
+  console.warn("BRIGHTDATA_API_KEY is not set - some functionality may not work");
 }
 
 const startScraping = async (prompt: string) => {
@@ -27,10 +29,14 @@ const startScraping = async (prompt: string) => {
   const perplexityPrompt = buildPerplexityPrompt(prompt);
 
   try {
+    if (!BRIGHTDATA_API_KEY) {
+      throw new Error("BRIGHTDATA_API_KEY is not configured");
+    }
+
     const response = await fetch(url, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${process.env.BRIGHTDATA_API_KEY}`,
+        Authorization: `Bearer ${BRIGHTDATA_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
