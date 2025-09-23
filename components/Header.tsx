@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { LogIn, Loader2 } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Menu, LogIn, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import { UserButton, SignInButton } from "@clerk/nextjs";
