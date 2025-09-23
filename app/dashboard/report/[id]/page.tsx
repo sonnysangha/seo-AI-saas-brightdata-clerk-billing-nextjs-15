@@ -1,8 +1,20 @@
-async function ReportPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+"use client";
+
+import { Chatbot } from "@/components/Chatbot";
+import { useParams } from "next/navigation";
+
+function ReportPage() {
+  const params = useParams();
+  const id = params.id as string;
 
   console.log(id);
-  return <div>ReportPage {id}</div>;
+  return (
+    <div>
+      <h1>ReportPage {id}</h1>
+      <p>Your SEO report details will appear here.</p>
+      <Chatbot />
+    </div>
+  );
 }
 
 export default ReportPage;

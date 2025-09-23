@@ -120,3 +120,36 @@ export const getUserJobs = query({
     return jobs;
   },
 });
+
+export const getRecentCompletedJobs = query({
+  args: {
+    limit: v.optional(v.number()),
+  },
+  returns: v.array(
+    v.object({
+      _id: v.id("scrapingJobs"),
+      _creationTime: v.number(),
+      originalPrompt: v.string(),
+      snapshotId: v.optional(v.string()),
+      status: v.union(
+        v.literal("pending"),
+        v.literal("running"),
+        v.literal("completed"),
+        v.literal("failed")
+      ),
+      results: v.optional(v.array(v.any())),
+      error: v.optional(v.string()),
+      createdAt: v.number(),
+      completedAt: v.optional(v.number()),
+    })
+  ),
+  handler: async (ctx, args) => {
+    const limit = args.limit ?? 10;
+    const jobs = await ctx.db
+      .query("scrapingJobs")
+      .withIndex("by_status", (q) => q.eq("status", "completed"))
+      .order("desc")
+      .take(limit);
+    return jobs;
+  },
+});

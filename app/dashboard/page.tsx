@@ -3,6 +3,7 @@
 import startScraping from "@/actions/startScraping";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Chatbot } from "@/components/Chatbot";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -34,6 +35,7 @@ function Dashboard() {
         />
         <Button type="submit">Generate Report</Button>
       </form>
+      <Chatbot />
     </div>
   );
 }
