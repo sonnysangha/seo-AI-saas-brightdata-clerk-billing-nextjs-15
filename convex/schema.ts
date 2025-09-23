@@ -3,6 +3,9 @@ import { v } from "convex/values";
 
 export default defineSchema({
   scrapingJobs: defineTable({
+    // User association
+    userId: v.string(),
+    
     // User input
     originalPrompt: v.string(),
 
@@ -24,5 +27,20 @@ export default defineSchema({
     completedAt: v.optional(v.number()),
   })
     .index("by_status", ["status"])
-    .index("by_created_at", ["createdAt"]),
+    .index("by_created_at", ["createdAt"])
+    .index("by_user_id", ["userId"])
+    .index("by_user_and_status", ["userId", "status"]),
+    
+  userSubscriptions: defineTable({
+    userId: v.string(),
+    plan: v.union(v.literal("free"), v.literal("starter"), v.literal("pro")),
+    status: v.union(v.literal("active"), v.literal("canceled"), v.literal("past_due")),
+    currentPeriodStart: v.number(),
+    currentPeriodEnd: v.number(),
+    reportsUsedThisMonth: v.number(),
+    lastResetDate: v.number(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user_id", ["userId"]),
 });
