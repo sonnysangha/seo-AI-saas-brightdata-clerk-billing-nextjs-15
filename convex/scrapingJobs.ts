@@ -75,6 +75,20 @@ export const completeJob = internalMutation({
   },
 });
 
+export const updateJobWithSeoReport = mutation({
+  args: {
+    jobId: v.id("scrapingJobs"),
+    seoReport: v.any(),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.jobId, {
+      seoReport: args.seoReport,
+    });
+    return null;
+  },
+});
+
 export const failJob = mutation({
   args: {
     jobId: v.id("scrapingJobs"),

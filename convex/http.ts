@@ -40,12 +40,31 @@ http.route({
         });
       }
 
-      // Save the results to the job
+      // Save the raw results to the job
       const results = Array.isArray(data) ? data : [data];
       await ctx.runMutation(internal.scrapingJobs.completeJob, {
         jobId: job._id,
         results: results,
       });
+
+      // Process the results into an SEO report
+      try {
+        const seoReport = await ctx.runAction(internal.seoReportProcessor.processSeoReport, {
+          jobId: job._id,
+          perplexityData: results,
+        });
+
+        // Update the job with the processed SEO report
+        await ctx.runMutation(api.scrapingJobs.updateJobWithSeoReport, {
+          jobId: job._id,
+          seoReport: seoReport,
+        });
+
+        console.log(`SEO report generated for job ${job._id}`);
+      } catch (reportError) {
+        console.error("Failed to generate SEO report:", reportError);
+        // Don't fail the webhook - the raw data is still saved
+      }
 
       console.log(`Job ${job._id} completed with job ID ${jobId}`);
       return new Response("Success", { status: 200 });
