@@ -15,6 +15,8 @@ import type {
 } from "convex/server";
 import type * as http from "../http.js";
 import type * as scrapingJobs from "../scrapingJobs.js";
+import type * as subscriptions from "../subscriptions.js";
+import type * as testSubscriptions from "../testSubscriptions.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -27,6 +29,8 @@ import type * as scrapingJobs from "../scrapingJobs.js";
 declare const fullApi: ApiFromModules<{
   http: typeof http;
   scrapingJobs: typeof scrapingJobs;
+  subscriptions: typeof subscriptions;
+  testSubscriptions: typeof testSubscriptions;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,
