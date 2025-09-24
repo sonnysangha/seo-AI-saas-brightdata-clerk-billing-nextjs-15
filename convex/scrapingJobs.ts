@@ -317,3 +317,14 @@ export const getUserJobs = query({
     return jobs;
   },
 });
+
+export const deleteJob = mutation({
+  args: {
+    jobId: v.id("scrapingJobs"),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    await ctx.db.delete(args.jobId);
+    return null;
+  },
+});

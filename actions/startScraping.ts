@@ -10,7 +10,11 @@ if (!process.env.BRIGHTDATA_API_KEY) {
   throw new Error("BRIGHTDATA_API_KEY is not set");
 }
 
-const startScraping = async (prompt: string, existingJobId?: string) => {
+const startScraping = async (
+  prompt: string,
+  existingJobId?: string,
+  country: string = "US"
+) => {
   // Initialize Convex client
   const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
@@ -77,7 +81,7 @@ const startScraping = async (prompt: string, existingJobId?: string) => {
           {
             url: "https://www.perplexity.ai",
             prompt: perplexityPrompt,
-            country: "US",
+            country: country,
             index: 1,
           },
         ],

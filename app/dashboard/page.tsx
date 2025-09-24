@@ -14,9 +14,11 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Plus, BarChart3, FileText, Sparkles } from "lucide-react";
 import ReportsTable from "@/components/ReportsTable";
+import { CountrySelector } from "@/components/ui/country-selector";
 
 function Dashboard() {
   const [prompt, setPrompt] = useState("");
+  const [country, setCountry] = useState("US");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -26,7 +28,7 @@ function Dashboard() {
 
     setIsLoading(true);
     try {
-      const response = await startScraping(prompt);
+      const response = await startScraping(prompt, undefined, country);
       if (response.ok) {
         console.log(response.data);
         const snapshotId = response.data.snapshot_id;
@@ -56,8 +58,8 @@ function Dashboard() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="flex gap-3">
+              <form onSubmit={handleSubmit} className=" gap-4">
+                <div className="flex flex-col md:flex-row gap-3">
                   <div className="relative flex-1">
                     <FileText className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
@@ -68,6 +70,11 @@ function Dashboard() {
                       disabled={isLoading}
                     />
                   </div>
+                  <CountrySelector
+                    value={country}
+                    onValueChange={setCountry}
+                    disabled={isLoading}
+                  />
                   <Button
                     type="submit"
                     size="lg"

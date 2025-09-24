@@ -58,18 +58,18 @@ INSTRUCTIONS:
    - Educational background and credentials
    - Current affiliations and partnerships
    - Unique value propositions and differentiators
-   - **Competitive Context**: How they compare to main competitors, market positioning
    - **Backlink Profile Summary**: Total backlinks, high-authority domains, link diversity
 
-6. **COMPETITIVE LANDSCAPE**: Actively search for and identify competitors:
-   - **Direct Competitors**: Search for "[target] competitors", "[target] alternatives", "[target] vs [competitor]"
-   - **Industry Comparisons**: Look for "best [industry] [type]", "top [category] like [target]"
-   - **Similar Entities**: Companies/individuals in the same space, offering similar products/services
-   - **Market Analysis**: Industry reports, comparison articles, "vs" content
-   - **Competitive Metrics**: If available, include competitor follower counts, rankings, market share
-   - **Competitor Strength Assessment**: Based on online presence, authority, audience size, content quality
+6. **COMPETITIVE LANDSCAPE**: Search for Competitors of ${target}, include detailed analysis:
+   - Identify competitors or similar entities mentioned in sources
+   - Compare audience sizes, metrics, and market positioning when available
+   - Include specific competitor names, follower counts, and platform presence
+   - Assess relative market strength based on available data
+   - Note any head-to-head comparisons found in sources
+   - Industry peers and collaborators
+   - Companies they've worked with
+   - Market positioning context
    - **Competitive Backlink Analysis**: How their backlink profile compares to competitors
-   - **Differentiation**: What makes the target unique compared to competitors
 
 7. **EVIDENCE-BASED**: Include specific facts, numbers, and claims with source attribution. Be as comprehensive and factual as possible.
 

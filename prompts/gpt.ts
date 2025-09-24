@@ -71,14 +71,15 @@ Keywords
 	•	Highlight keyword gaps and low-competition opportunities.
 
 Competitive Landscape
-	•	Extract competitors mentioned in the source data with specific names and details.
-	•	For each competitor, extract available metrics (follower counts, rankings, market presence).
-	•	Calculate relative strength scores (0.0-1.0) based on mentioned authority indicators.
-	•	Include competitor names, strength assessments, and any comparative data found.
-	•	If no competitors are explicitly mentioned in sources, set competitors array to empty.
+	•	When competitors are mentioned in source data, extract them with detailed information.
+	•	For each competitor found, include: name, any available metrics (subscribers, followers, audience size), market position.
+	•	Calculate strength scores (0.0-1.0) based on mentioned metrics like audience size, authority, or market presence.
+	•	Include competitive comparisons, head-to-head analyses, or market positioning found in sources.
+	•	Extract specific numbers: subscriber counts, follower counts, user base size, market share when mentioned.
+	•	Note competitive advantages, differentiators, and relative positioning.
+	•	If no competitors are mentioned in the source data, leave competitors array empty.
 	•	Compare backlink profiles (volume, quality, diversity) when data is available.
-	•	Highlight differentiators (e.g., innovative features, niches competitors miss).
-	•	Note underserved markets and competitive gaps.
+	•	Highlight differentiators and competitive gaps mentioned in sources.
 
 Social Media & Community
 	•	Identify mentioned social media platforms.
