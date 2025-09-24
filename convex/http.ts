@@ -40,14 +40,33 @@ http.route({
         });
       }
 
-      // Save the results to the job
-      const results = Array.isArray(data) ? data : [data];
-      await ctx.runMutation(internal.scrapingJobs.completeJob, {
+      // Transition to analyzing status to start the AI analysis
+      await ctx.runMutation(api.scrapingJobs.setJobToAnalyzing, {
         jobId: job._id,
-        results: results,
       });
 
-      console.log(`Job ${job._id} completed with job ID ${jobId}`);
+      // Simulate AI analysis with a timeout for 5 seconds
+      setTimeout(async () => {
+        try {
+          // Save the results to the job and mark as completed
+          const results = Array.isArray(data) ? data : [data];
+          await ctx.runMutation(internal.scrapingJobs.completeJob, {
+            jobId: job._id,
+            results: results,
+          });
+          console.log(`Job ${job._id} completed with job ID ${jobId}`);
+        } catch (error) {
+          console.error("Error completing job:", error);
+          await ctx.runMutation(api.scrapingJobs.failJob, {
+            jobId: job._id,
+            error: "Failed to complete AI analysis",
+          });
+        }
+      }, 5000); // 5 second timeout for AI analysis
+
+      console.log(
+        `Job ${job._id} moved to analyzing status with job ID ${jobId}`
+      );
       return new Response("Success", { status: 200 });
     } catch (error) {
       console.error("Webhook error:", error);

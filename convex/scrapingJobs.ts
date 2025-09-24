@@ -31,6 +31,19 @@ export const updateJobWithSnapshotId = mutation({
   },
 });
 
+export const setJobToAnalyzing = mutation({
+  args: {
+    jobId: v.id("scrapingJobs"),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.jobId, {
+      status: "analyzing",
+    });
+    return null;
+  },
+});
+
 export const getJobById = query({
   args: {
     jobId: v.id("scrapingJobs"),
@@ -44,6 +57,7 @@ export const getJobById = query({
       status: v.union(
         v.literal("pending"),
         v.literal("running"),
+        v.literal("analyzing"),
         v.literal("completed"),
         v.literal("failed")
       ),
@@ -91,6 +105,39 @@ export const failJob = mutation({
   },
 });
 
+export const getJobBySnapshotId = query({
+  args: {
+    snapshotId: v.string(),
+  },
+  returns: v.union(
+    v.object({
+      _id: v.id("scrapingJobs"),
+      _creationTime: v.number(),
+      originalPrompt: v.string(),
+      snapshotId: v.optional(v.string()),
+      status: v.union(
+        v.literal("pending"),
+        v.literal("running"),
+        v.literal("analyzing"),
+        v.literal("completed"),
+        v.literal("failed")
+      ),
+      results: v.optional(v.array(v.any())),
+      error: v.optional(v.string()),
+      createdAt: v.number(),
+      completedAt: v.optional(v.number()),
+    }),
+    v.null()
+  ),
+  handler: async (ctx, args) => {
+    const job = await ctx.db
+      .query("scrapingJobs")
+      .filter((q) => q.eq(q.field("snapshotId"), args.snapshotId))
+      .first();
+    return job;
+  },
+});
+
 export const getUserJobs = query({
   args: {},
   returns: v.array(
@@ -102,6 +149,7 @@ export const getUserJobs = query({
       status: v.union(
         v.literal("pending"),
         v.literal("running"),
+        v.literal("analyzing"),
         v.literal("completed"),
         v.literal("failed")
       ),

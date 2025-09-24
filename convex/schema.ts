@@ -11,6 +11,7 @@ export default defineSchema({
     status: v.union(
       v.literal("pending"),
       v.literal("running"),
+      v.literal("analyzing"),
       v.literal("completed"),
       v.literal("failed")
     ),
