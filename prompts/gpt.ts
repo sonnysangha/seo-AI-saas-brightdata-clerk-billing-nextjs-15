@@ -71,10 +71,14 @@ Keywords
 	•	Highlight keyword gaps and low-competition opportunities.
 
 Competitive Landscape
-	•	Identify competitors or similar entities.
-	•	Compare backlink profiles (volume, quality, diversity).
+	•	Extract competitors mentioned in the source data with specific names and details.
+	•	For each competitor, extract available metrics (follower counts, rankings, market presence).
+	•	Calculate relative strength scores (0.0-1.0) based on mentioned authority indicators.
+	•	Include competitor names, strength assessments, and any comparative data found.
+	•	If no competitors are explicitly mentioned in sources, set competitors array to empty.
+	•	Compare backlink profiles (volume, quality, diversity) when data is available.
 	•	Highlight differentiators (e.g., innovative features, niches competitors miss).
-	•	Note underserved markets.
+	•	Note underserved markets and competitive gaps.
 
 Social Media & Community
 	•	Identify mentioned social media platforms.

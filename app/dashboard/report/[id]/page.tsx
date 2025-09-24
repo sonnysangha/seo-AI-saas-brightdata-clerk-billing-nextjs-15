@@ -221,8 +221,7 @@ function ReportStatus({ id }: { id: string }) {
                     </div>
                     <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
                       <p className="text-sm text-green-700 dark:text-green-300">
-                        Your SEO report contains {job.results.length} data
-                        points and is ready for analysis.
+                        Your SEO report is ready for analysis.
                       </p>
                     </div>
                   </div>
@@ -234,7 +233,11 @@ function ReportStatus({ id }: { id: string }) {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             {job.status === "completed" && (
               <Link href={`/dashboard/report/${id}/summary`}>
-                <Button variant="default" size="lg" className="cursor-pointer">
+                <Button
+                  variant="default"
+                  size="lg"
+                  className="cursor-pointer bg-green-600 hover:bg-green-700 text-white"
+                >
                   View Full Report
                 </Button>
               </Link>
