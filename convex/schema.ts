@@ -5,6 +5,8 @@ export default defineSchema({
   scrapingJobs: defineTable({
     // User input
     originalPrompt: v.string(),
+    // Saved GPT analysis prompt for debugging
+    analysisPrompt: v.optional(v.string()),
 
     // Job tracking
     snapshotId: v.optional(v.string()),

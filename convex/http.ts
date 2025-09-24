@@ -3,10 +3,6 @@ import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
 import { api, internal } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
-import { openai } from "@ai-sdk/openai";
-import { generateObject } from "ai";
-import { systemPrompt, buildAnalysisPrompt } from "@/prompts/gpt";
-import { seoReportSchema } from "@/lib/seo-schema";
 
 const http = httpRouter();
 
@@ -52,47 +48,22 @@ http.route({
         });
       }
 
-      // Transition to analyzing status to start the AI analysis
-      await ctx.runMutation(api.scrapingJobs.setJobToAnalyzing, {
-        jobId: job._id,
-      });
-
-      // Generate comprehensive SEO report using structured output
-      const scrapingData = Array.isArray(data) ? data : [data];
-      const analysisPrompt = buildAnalysisPrompt(scrapingData);
-
-      console.log("Generating SEO report for job:", job._id);
-
-      const { object: seoReport } = await generateObject({
-        model: openai("gpt-4o"),
-        system: systemPrompt(),
-        prompt: analysisPrompt,
-        schema: seoReportSchema,
-        maxRetries: 2, // Retry if schema validation fails
-      });
-
-      console.log("SEO report generated successfully:", {
-        entity_name: seoReport.meta.entity_name,
-        entity_type: seoReport.meta.entity_type,
-        confidence_score: seoReport.meta.confidence_score,
-        total_sources: seoReport.inventory.total_sources,
-        recommendations_count: seoReport.recommendations.length,
-        summary_score: seoReport.summary.overall_score,
-      });
-
-      console.log("SEO FULL REPORT", seoReport);
-
-      // Save both the raw scraping data and the structured SEO report
+      // Step 1: Save raw scraping data first
       const rawResults = Array.isArray(data) ? data : [data];
-      await ctx.runMutation(internal.scrapingJobs.completeJob, {
+      await ctx.runMutation(internal.scrapingJobs.saveRawScrapingData, {
         jobId: job._id,
-        results: rawResults,
-        seoReport: seoReport,
+        rawData: rawResults,
       });
-      console.log(`Job ${job._id} completed with job ID ${jobId}`);
+
+      console.log("Raw scraping data saved for job:", job._id);
+
+      // Step 2: Schedule AI analysis as background job
+      await ctx.scheduler.runAfter(0, internal.analysis.runAnalysis, {
+        jobId: job._id,
+      });
 
       console.log(
-        `Job ${job._id} moved to analyzing status with job ID ${jobId}`
+        `Analysis scheduled for job ${job._id}, webhook returning immediately`
       );
 
       return new Response("Success", { status: 200 });

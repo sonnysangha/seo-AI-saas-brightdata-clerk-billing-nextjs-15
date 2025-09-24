@@ -1,5 +1,6 @@
 import { mutation, query, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
+import { seoReportSchema } from "@/lib/seo-schema";
 
 export const createScrapingJob = mutation({
   args: {
@@ -26,6 +27,7 @@ export const updateJobWithSnapshotId = mutation({
     await ctx.db.patch(args.jobId, {
       snapshotId: args.snapshotId,
       status: "running",
+      error: undefined, // Clear any previous error when job starts running
     });
     return null;
   },
@@ -39,6 +41,53 @@ export const setJobToAnalyzing = mutation({
   handler: async (ctx, args) => {
     await ctx.db.patch(args.jobId, {
       status: "analyzing",
+      error: undefined, // Clear any previous error when starting analysis
+    });
+    return null;
+  },
+});
+
+export const saveRawScrapingData = internalMutation({
+  args: {
+    jobId: v.id("scrapingJobs"),
+    rawData: v.array(v.any()),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.jobId, {
+      results: args.rawData,
+      status: "analyzing",
+      error: undefined, // Clear any previous error when scraping data is successfully saved
+    });
+    return null;
+  },
+});
+
+export const saveSeoReport = internalMutation({
+  args: {
+    jobId: v.id("scrapingJobs"),
+    seoReport: v.any(),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    // Validate with Zod before persisting
+    const parsed = seoReportSchema.parse(args.seoReport);
+    await ctx.db.patch(args.jobId, {
+      seoReport: parsed,
+    });
+    return null;
+  },
+});
+
+export const saveOriginalPrompt = internalMutation({
+  args: {
+    jobId: v.id("scrapingJobs"),
+    prompt: v.string(),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.jobId, {
+      analysisPrompt: args.prompt,
     });
     return null;
   },
@@ -53,6 +102,7 @@ export const getJobById = query({
       _id: v.id("scrapingJobs"),
       _creationTime: v.number(),
       originalPrompt: v.string(),
+      analysisPrompt: v.optional(v.string()),
       snapshotId: v.optional(v.string()),
       status: v.union(
         v.literal("pending"),
@@ -70,23 +120,28 @@ export const getJobById = query({
     v.null()
   ),
   handler: async (ctx, args) => {
-    return await ctx.db.get(args.jobId);
+    const job = await ctx.db.get(args.jobId);
+    if (job && job.seoReport !== undefined) {
+      // Validate on read to protect across Convex calls
+      const result = seoReportSchema.safeParse(job.seoReport);
+      if (!result.success) {
+        throw new Error("Stored seoReport failed validation");
+      }
+    }
+    return job;
   },
 });
 
 export const completeJob = internalMutation({
   args: {
     jobId: v.id("scrapingJobs"),
-    results: v.array(v.any()),
-    seoReport: v.optional(v.any()),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
     await ctx.db.patch(args.jobId, {
       status: "completed",
-      results: args.results,
-      seoReport: args.seoReport,
       completedAt: Date.now(),
+      error: undefined, // Clear any previous error on successful completion
     });
     return null;
   },
@@ -114,13 +169,68 @@ export const retryJob = mutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    // Reset the job to pending status and clear error
+    // Reset the job to pending status and clear error, results, and old snapshotId
     await ctx.db.patch(args.jobId, {
       status: "pending",
       error: undefined,
       completedAt: undefined,
       results: undefined,
       seoReport: undefined,
+      snapshotId: undefined, // Clear old snapshotId so new one becomes the report ID
+    });
+    return null;
+  },
+});
+
+/**
+ * Check if a job can use smart retry (has analysis prompt and scraping data)
+ */
+export const canUseSmartRetry = query({
+  args: {
+    jobId: v.id("scrapingJobs"),
+  },
+  returns: v.object({
+    canRetryAnalysisOnly: v.boolean(),
+    hasScrapingData: v.boolean(),
+    hasAnalysisPrompt: v.boolean(),
+  }),
+  handler: async (ctx, args) => {
+    const job = await ctx.db.get(args.jobId);
+    if (!job) {
+      return {
+        canRetryAnalysisOnly: false,
+        hasScrapingData: false,
+        hasAnalysisPrompt: false,
+      };
+    }
+
+    const hasScrapingData = !!(job.results && job.results.length > 0);
+    const hasAnalysisPrompt = !!job.analysisPrompt;
+    const canRetryAnalysisOnly = hasScrapingData && hasAnalysisPrompt;
+
+    return {
+      canRetryAnalysisOnly,
+      hasScrapingData,
+      hasAnalysisPrompt,
+    };
+  },
+});
+
+/**
+ * Reset a job for analysis retry - clears analysis results but keeps scraping data
+ */
+export const resetJobForAnalysisRetry = internalMutation({
+  args: {
+    jobId: v.id("scrapingJobs"),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.jobId, {
+      status: "analyzing",
+      error: undefined, // Clear previous error
+      completedAt: undefined,
+      seoReport: undefined,
+      // Keep: results, analysisPrompt, snapshotId, originalPrompt
     });
     return null;
   },
@@ -135,6 +245,7 @@ export const getJobBySnapshotId = query({
       _id: v.id("scrapingJobs"),
       _creationTime: v.number(),
       originalPrompt: v.string(),
+      analysisPrompt: v.optional(v.string()),
       snapshotId: v.optional(v.string()),
       status: v.union(
         v.literal("pending"),
@@ -156,6 +267,12 @@ export const getJobBySnapshotId = query({
       .query("scrapingJobs")
       .filter((q) => q.eq(q.field("snapshotId"), args.snapshotId))
       .first();
+    if (job && job.seoReport !== undefined) {
+      const result = seoReportSchema.safeParse(job.seoReport);
+      if (!result.success) {
+        throw new Error("Stored seoReport failed validation");
+      }
+    }
     return job;
   },
 });
@@ -167,6 +284,7 @@ export const getUserJobs = query({
       _id: v.id("scrapingJobs"),
       _creationTime: v.number(),
       originalPrompt: v.string(),
+      analysisPrompt: v.optional(v.string()),
       snapshotId: v.optional(v.string()),
       status: v.union(
         v.literal("pending"),
@@ -188,6 +306,14 @@ export const getUserJobs = query({
       .withIndex("by_created_at")
       .order("desc")
       .collect();
+    for (const job of jobs) {
+      if (job.seoReport !== undefined) {
+        const result = seoReportSchema.safeParse(job.seoReport);
+        if (!result.success) {
+          throw new Error("Stored seoReport failed validation");
+        }
+      }
+    }
     return jobs;
   },
 });

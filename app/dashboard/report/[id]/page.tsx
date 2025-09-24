@@ -4,6 +4,7 @@ import React, { useState, useTransition } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import startScraping from "@/actions/startScraping";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -36,6 +37,7 @@ function ReportStatus({ id }: { id: string }) {
   const job = useQuery(api.scrapingJobs.getJobBySnapshotId, { snapshotId: id });
   const [isPending, startTransition] = useTransition();
   const [retryError, setRetryError] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleRetry = () => {
     if (!job) return;
@@ -45,7 +47,18 @@ function ReportStatus({ id }: { id: string }) {
     startTransition(async () => {
       try {
         const result = await startScraping(job.originalPrompt, job._id);
-        if (!result.ok) {
+        if (result.ok) {
+          if (result.smartRetry) {
+            // Smart retry - stay on same page, job will update in real-time
+            console.log("Smart retry initiated - staying on current page");
+            // Don't navigate anywhere, just let the page update via real-time data
+            return; // Explicitly return to complete the transition
+          } else if (result.data?.snapshot_id) {
+            // Full retry with new snapshot - redirect to new report page
+            router.replace(`/dashboard/report/${result.data.snapshot_id}`);
+            return; // Explicitly return to complete the transition
+          }
+        } else {
           setRetryError(result.error || "Failed to retry job");
         }
       } catch (error) {

@@ -17,11 +17,39 @@ const startScraping = async (prompt: string, existingJobId?: string) => {
   let jobId: string;
 
   if (existingJobId) {
-    // Retry existing job - reset it to pending status
-    await convex.mutation(api.scrapingJobs.retryJob, {
+    // Check if we can use smart retry (analysis only)
+    const retryInfo = await convex.query(api.scrapingJobs.canUseSmartRetry, {
       jobId: existingJobId as Id<"scrapingJobs">,
     });
-    jobId = existingJobId;
+
+    if (retryInfo.canRetryAnalysisOnly) {
+      console.log("Using smart retry - analysis only for job:", existingJobId);
+
+      // Import the retry analysis action
+      const retryAnalysisOnly = (await import("./retryAnalysis")).default;
+
+      const result = await retryAnalysisOnly(existingJobId);
+      if (result.ok) {
+        return {
+          ok: true,
+          data: { snapshot_id: null }, // No new snapshot for analysis retry
+          jobId: existingJobId,
+          smartRetry: true,
+        };
+      } else {
+        return {
+          ok: false,
+          error: result.error || "Smart retry failed",
+        };
+      }
+    } else {
+      console.log("Full retry required for job:", existingJobId);
+      // Retry existing job - reset it to pending status
+      await convex.mutation(api.scrapingJobs.retryJob, {
+        jobId: existingJobId as Id<"scrapingJobs">,
+      });
+      jobId = existingJobId;
+    }
   } else {
     // Create a new job record in the database
     jobId = await convex.mutation(api.scrapingJobs.createScrapingJob, {
