@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useState, useTransition } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import startScraping from "@/actions/startScraping";
 import {
   Card,
   CardContent,
@@ -33,6 +34,27 @@ import {
 
 function ReportStatus({ id }: { id: string }) {
   const job = useQuery(api.scrapingJobs.getJobBySnapshotId, { snapshotId: id });
+  const [isPending, startTransition] = useTransition();
+  const [retryError, setRetryError] = useState<string | null>(null);
+
+  const handleRetry = () => {
+    if (!job) return;
+
+    setRetryError(null);
+
+    startTransition(async () => {
+      try {
+        const result = await startScraping(job.originalPrompt, job._id);
+        if (!result.ok) {
+          setRetryError(result.error || "Failed to retry job");
+        }
+      } catch (error) {
+        setRetryError(
+          error instanceof Error ? error.message : "Unknown error occurred"
+        );
+      }
+    });
+  };
 
   if (job === undefined) {
     return (
@@ -206,9 +228,29 @@ function ReportStatus({ id }: { id: string }) {
             )}
 
             {job.status === "failed" && (
-              <Button variant="default" size="lg" className="cursor-pointer">
-                Retry Report
-              </Button>
+              <div className="flex flex-col items-center gap-2">
+                <Button
+                  variant="default"
+                  size="lg"
+                  className="cursor-pointer"
+                  onClick={handleRetry}
+                  disabled={isPending}
+                >
+                  {isPending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                      Retrying...
+                    </>
+                  ) : (
+                    "Retry Report"
+                  )}
+                </Button>
+                {retryError && (
+                  <p className="text-sm text-red-600 dark:text-red-400 text-center">
+                    {retryError}
+                  </p>
+                )}
+              </div>
             )}
 
             <Link href="/dashboard">

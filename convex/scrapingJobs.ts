@@ -62,6 +62,7 @@ export const getJobById = query({
         v.literal("failed")
       ),
       results: v.optional(v.array(v.any())),
+      seoReport: v.optional(v.any()),
       error: v.optional(v.string()),
       createdAt: v.number(),
       completedAt: v.optional(v.number()),
@@ -77,12 +78,14 @@ export const completeJob = internalMutation({
   args: {
     jobId: v.id("scrapingJobs"),
     results: v.array(v.any()),
+    seoReport: v.optional(v.any()),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
     await ctx.db.patch(args.jobId, {
       status: "completed",
       results: args.results,
+      seoReport: args.seoReport,
       completedAt: Date.now(),
     });
     return null;
@@ -100,6 +103,24 @@ export const failJob = mutation({
       status: "failed",
       error: args.error,
       completedAt: Date.now(),
+    });
+    return null;
+  },
+});
+
+export const retryJob = mutation({
+  args: {
+    jobId: v.id("scrapingJobs"),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    // Reset the job to pending status and clear error
+    await ctx.db.patch(args.jobId, {
+      status: "pending",
+      error: undefined,
+      completedAt: undefined,
+      results: undefined,
+      seoReport: undefined,
     });
     return null;
   },
@@ -123,6 +144,7 @@ export const getJobBySnapshotId = query({
         v.literal("failed")
       ),
       results: v.optional(v.array(v.any())),
+      seoReport: v.optional(v.any()),
       error: v.optional(v.string()),
       createdAt: v.number(),
       completedAt: v.optional(v.number()),
@@ -154,6 +176,7 @@ export const getUserJobs = query({
         v.literal("failed")
       ),
       results: v.optional(v.array(v.any())),
+      seoReport: v.optional(v.any()),
       error: v.optional(v.string()),
       createdAt: v.number(),
       completedAt: v.optional(v.number()),

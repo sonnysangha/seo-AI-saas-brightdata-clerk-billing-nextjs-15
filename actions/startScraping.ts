@@ -4,19 +4,30 @@ import { ApiPath } from "@/convex/http";
 import { buildPerplexityPrompt } from "@/prompts/perplexity";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 
 if (!process.env.BRIGHTDATA_API_KEY) {
   throw new Error("BRIGHTDATA_API_KEY is not set");
 }
 
-const startScraping = async (prompt: string) => {
+const startScraping = async (prompt: string, existingJobId?: string) => {
   // Initialize Convex client
   const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
-  // Create a job record in the database
-  const jobId = await convex.mutation(api.scrapingJobs.createScrapingJob, {
-    originalPrompt: prompt,
-  });
+  let jobId: string;
+
+  if (existingJobId) {
+    // Retry existing job - reset it to pending status
+    await convex.mutation(api.scrapingJobs.retryJob, {
+      jobId: existingJobId as Id<"scrapingJobs">,
+    });
+    jobId = existingJobId;
+  } else {
+    // Create a new job record in the database
+    jobId = await convex.mutation(api.scrapingJobs.createScrapingJob, {
+      originalPrompt: prompt,
+    });
+  }
 
   // Include the job ID in the webhook URL as a query parameter
   const ENDPOINT = `${process.env.NEXT_PUBLIC_CONVEX_SITE_URL}${ApiPath.Webhook}?jobId=${jobId}`;
@@ -58,7 +69,7 @@ const startScraping = async (prompt: string) => {
       const text = await response.text().catch(() => "");
       // Mark job as failed
       await convex.mutation(api.scrapingJobs.failJob, {
-        jobId,
+        jobId: jobId as Id<"scrapingJobs">,
         error: `HTTP ${response.status} ${response.statusText}${text ? `: ${text}` : ""}`,
       });
       return {
@@ -72,7 +83,7 @@ const startScraping = async (prompt: string) => {
     // Extract snapshot ID from the response and update the job
     if (data && data.snapshot_id) {
       await convex.mutation(api.scrapingJobs.updateJobWithSnapshotId, {
-        jobId,
+        jobId: jobId as Id<"scrapingJobs">,
         snapshotId: data.snapshot_id,
       });
     }
@@ -82,7 +93,7 @@ const startScraping = async (prompt: string) => {
     console.error(error);
     // Mark job as failed
     await convex.mutation(api.scrapingJobs.failJob, {
-      jobId,
+      jobId: jobId as Id<"scrapingJobs">,
       error: error instanceof Error ? error.message : String(error),
     });
     return {

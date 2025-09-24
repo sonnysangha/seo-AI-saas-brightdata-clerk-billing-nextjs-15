@@ -18,6 +18,7 @@ export default defineSchema({
 
     // Results (optional, filled when webhook receives data)
     results: v.optional(v.array(v.any())),
+    seoReport: v.optional(v.any()), // Structured SEO report from AI analysis
     error: v.optional(v.string()),
 
     // Metadata

@@ -1,4 +1,10 @@
-import { Clock, Loader2, CheckCircle, XCircle, BarChart3 } from "lucide-react";
+import {
+  Clock,
+  CheckCircle,
+  XCircle,
+  BarChart3,
+  HardDriveDownload,
+} from "lucide-react";
 
 export function getSpinnerColor(status: string): string {
   const statusConfig = {
@@ -37,7 +43,14 @@ export function getProgressBarStyle(status: string): string {
 }
 
 export function getReportTitle(status: string): string {
-  return status === "completed" ? "Report Ready!" : "Generating Report";
+  switch (status) {
+    case "completed":
+      return "Report Ready!";
+    case "failed":
+      return "Report Failed";
+    default:
+      return "Generating Report";
+  }
 }
 
 export function getStatusMessage(status: string): string {
@@ -67,7 +80,7 @@ export function getStatusConfig(status: string) {
         "bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-800",
     },
     running: {
-      icon: Loader2,
+      icon: HardDriveDownload,
       label: "Scraping",
       variant: "secondary" as const,
       className:
