@@ -1,17 +1,29 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Menu, LogIn, Loader2 } from "lucide-react";
+import { LogIn, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import { UserButton, SignInButton } from "@clerk/nextjs";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
 import { ThemeToggle } from "./ThemeToggle";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 function Header() {
+  const pathname = usePathname();
+  const [isPricingPage, setIsPricingPage] = useState(false);
+
+  useEffect(() => {
+    setIsPricingPage(pathname.startsWith("/pricing"));
+  }, [pathname]);
+
   return (
-    <header className="sticky top-0 z-0 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header
+      className={`sticky top-0 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 ${
+        isPricingPage ? "z-0 bg-transparent" : "z-50"
+      }`}
+    >
       <div className="mx-auto flex h-14 max-w-7xl items-center gap-2 px-4">
         <div className="flex flex-1 items-center gap-3">
           <Link href="/" className="flex items-center gap-2">

@@ -10,9 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
-  Clock,
   Loader2,
   CheckCircle,
   XCircle,
@@ -21,95 +19,17 @@ import {
   FileText,
   AlertCircle,
 } from "lucide-react";
-
-function getSpinnerColor(status: string): string {
-  const statusConfig = {
-    pending: "text-yellow-600 dark:text-yellow-400",
-    running: "text-blue-600 dark:text-blue-400",
-    analyzing: "text-purple-600 dark:text-purple-400",
-  };
-
-  return (
-    statusConfig[status as keyof typeof statusConfig] || "text-muted-foreground"
-  );
-}
-
-function getProgressPercentage(status: string): string {
-  const progressMap = {
-    pending: "0%",
-    running: "25%",
-    analyzing: "75%",
-    completed: "100%",
-    failed: "Error",
-  };
-
-  return progressMap[status as keyof typeof progressMap] || "0%";
-}
-
-function getProgressBarStyle(status: string): string {
-  const styleMap = {
-    pending: "w-0 bg-yellow-500",
-    running: "w-1/4 bg-blue-500",
-    analyzing: "w-3/4 bg-purple-500",
-    completed: "w-full bg-green-500",
-    failed: "w-full bg-red-500",
-  };
-
-  return styleMap[status as keyof typeof styleMap] || "w-0 bg-gray-500";
-}
-
-function getReportTitle(status: string): string {
-  return status === "completed" ? "Report Ready!" : "Generating Report";
-}
-
-function StatusBadge({ status }: { status: string }) {
-  const statusConfig = {
-    pending: {
-      icon: Clock,
-      label: "Pending",
-      variant: "secondary" as const,
-      className:
-        "bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-800",
-    },
-    running: {
-      icon: Loader2,
-      label: "Scraping",
-      variant: "secondary" as const,
-      className:
-        "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800",
-    },
-    analyzing: {
-      icon: BarChart3,
-      label: "Analyzing",
-      variant: "secondary" as const,
-      className:
-        "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-800",
-    },
-    completed: {
-      icon: CheckCircle,
-      label: "Completed",
-      variant: "default" as const,
-      className:
-        "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800",
-    },
-    failed: {
-      icon: XCircle,
-      label: "Failed",
-      variant: "destructive" as const,
-      className:
-        "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800",
-    },
-  };
-
-  const config =
-    statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
-
-  return (
-    <Badge variant={config.variant} className={config.className}>
-      {config.label}
-    </Badge>
-  );
-}
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import StatusBadge from "@/components/StatusBadge";
+import {
+  getSpinnerColor,
+  getProgressPercentage,
+  getProgressBarStyle,
+  getReportTitle,
+  getStatusMessage,
+  formatDateTime,
+} from "@/lib/status-utils";
 
 function ReportStatus({ id }: { id: string }) {
   const job = useQuery(api.scrapingJobs.getJobBySnapshotId, { snapshotId: id });
@@ -138,27 +58,6 @@ function ReportStatus({ id }: { id: string }) {
     );
   }
 
-  const formatDate = (timestamp: number) => {
-    return new Date(timestamp).toLocaleString();
-  };
-
-  const getStatusMessage = (status: string) => {
-    switch (status) {
-      case "pending":
-        return "Your report is queued and will start processing shortly.";
-      case "running":
-        return "We're scraping data from search engines. This may take a few minutes.";
-      case "analyzing":
-        return "We're analyzing your data and generating AI insights. This may take a few more minutes.";
-      case "completed":
-        return "Your report is ready! You can now view and download your SEO insights.";
-      case "failed":
-        return "There was an error processing your report. Please try again.";
-      default:
-        return "Unknown status";
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
@@ -184,7 +83,7 @@ function ReportStatus({ id }: { id: string }) {
                     className={`w-5 h-5 animate-spin mb-2 ${getSpinnerColor(job.status)}`}
                   />
                 )}
-                <StatusBadge status={job.status} />
+                <StatusBadge status={job.status} showIcon={true} />
               </div>
               <CardTitle className="text-xl">
                 {getReportTitle(job.status)}
@@ -227,7 +126,7 @@ function ReportStatus({ id }: { id: string }) {
                     <div>
                       <p className="text-sm font-medium">Created</p>
                       <p className="text-sm text-muted-foreground">
-                        {formatDate(job.createdAt)}
+                        {formatDateTime(job.createdAt)}
                       </p>
                     </div>
                   </div>
@@ -239,7 +138,7 @@ function ReportStatus({ id }: { id: string }) {
                     <div>
                       <p className="text-sm font-medium">Completed</p>
                       <p className="text-sm text-muted-foreground">
-                        {formatDate(job.completedAt)}
+                        {formatDateTime(job.completedAt)}
                       </p>
                     </div>
                   </div>
@@ -299,20 +198,24 @@ function ReportStatus({ id }: { id: string }) {
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             {job.status === "completed" && (
-              <button className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium">
-                View Full Report
-              </button>
+              <Link href={`/dashboard/report/${id}/summary`}>
+                <Button variant="default" size="lg" className="cursor-pointer">
+                  View Full Report
+                </Button>
+              </Link>
             )}
 
             {job.status === "failed" && (
-              <button className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium">
+              <Button variant="default" size="lg" className="cursor-pointer">
                 Retry Report
-              </button>
+              </Button>
             )}
 
-            <button className="px-6 py-3 border border-border rounded-lg hover:bg-muted transition-colors font-medium">
-              Back to Dashboard
-            </button>
+            <Link href="/dashboard">
+              <Button variant="outline" size="lg" className="cursor-pointer">
+                Back to Dashboard
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

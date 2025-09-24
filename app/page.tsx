@@ -23,6 +23,7 @@ import {
   TrendingUp,
   Globe,
 } from "lucide-react";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -69,14 +70,16 @@ export default function Home() {
               </Unauthenticated>
 
               <Authenticated>
-                <Button
-                  size="lg"
-                  className="text-base px-8 py-6 shadow-lg hover:shadow-xl transition-all duration-300 group"
-                >
-                  <Search className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" />
-                  Generate My Report
-                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
+                <Link href="/dashboard">
+                  <Button
+                    size="lg"
+                    className="text-base px-8 py-6 shadow-lg hover:shadow-xl transition-all duration-300 group"
+                  >
+                    <Search className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" />
+                    Generate My Report
+                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
               </Authenticated>
 
               <Button
