@@ -34,15 +34,24 @@ import {
 } from "@/lib/status-utils";
 import { useUser } from "@clerk/nextjs";
 
-function ReportStatus({ id }: { id: string }) {
+export default function ReportPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const [id, setId] = React.useState<string | null>(null);
   const { user } = useUser();
   const job = useQuery(api.scrapingJobs.getJobBySnapshotId, {
-    snapshotId: id,
+    snapshotId: id || "skip",
     userId: user?.id || "skip",
   });
   const [isPending, startTransition] = useTransition();
   const [retryError, setRetryError] = useState<string | null>(null);
   const router = useRouter();
+
+  React.useEffect(() => {
+    params.then(({ id }) => setId(id));
+  }, [params]);
 
   const handleRetry = () => {
     if (!job) return;
@@ -74,27 +83,30 @@ function ReportStatus({ id }: { id: string }) {
     });
   };
 
+  if (!id) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="w-6 h-6 animate-spin mr-2" />
+        <span className="text-muted-foreground">Loading...</span>
+      </div>
+    );
+  }
+
   if (job === undefined) {
     return (
-      <Card className="w-full max-w-2xl mx-auto">
-        <CardContent className="flex items-center justify-center p-8">
-          <Loader2 className="w-6 h-6 animate-spin mr-2" />
-          <span className="text-muted-foreground">
-            Loading report status...
-          </span>
-        </CardContent>
-      </Card>
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="w-6 h-6 animate-spin mr-2" />
+        <span className="text-muted-foreground">Loading report status...</span>
+      </div>
     );
   }
 
   if (job === null) {
     return (
-      <Card className="w-full max-w-2xl mx-auto">
-        <CardContent className="flex items-center justify-center p-8">
-          <AlertCircle className="w-6 h-6 text-destructive mr-2" />
-          <span className="text-destructive">Report not found</span>
-        </CardContent>
-      </Card>
+      <div className="flex items-center justify-center min-h-screen">
+        <AlertCircle className="w-6 h-6 text-destructive mr-2" />
+        <span className="text-destructive">Report not found</span>
+      </div>
     );
   }
 
@@ -285,30 +297,3 @@ function ReportStatus({ id }: { id: string }) {
     </div>
   );
 }
-
-function ReportPage({ params }: { params: Promise<{ id: string }> }) {
-  return <ReportStatusWrapper params={params} />;
-}
-
-function ReportStatusWrapper({ params }: { params: Promise<{ id: string }> }) {
-  const [id, setId] = React.useState<string | null>(null);
-
-  React.useEffect(() => {
-    params.then(({ id }) => setId(id));
-  }, [params]);
-
-  if (!id) {
-    return (
-      <Card className="w-full max-w-2xl mx-auto">
-        <CardContent className="flex items-center justify-center p-8">
-          <Loader2 className="w-6 h-6 animate-spin mr-2" />
-          <span className="text-muted-foreground">Loading...</span>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return <ReportStatus id={id} />;
-}
-
-export default ReportPage;

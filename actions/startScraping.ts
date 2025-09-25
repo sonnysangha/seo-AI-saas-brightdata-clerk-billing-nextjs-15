@@ -31,6 +31,7 @@ const startScraping = async (
     // Check if we can use smart retry (analysis only)
     const retryInfo = await convex.query(api.scrapingJobs.canUseSmartRetry, {
       jobId: existingJobId as Id<"scrapingJobs">,
+      userId: userId,
     });
 
     if (retryInfo.canRetryAnalysisOnly) {

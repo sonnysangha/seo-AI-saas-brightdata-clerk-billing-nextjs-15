@@ -93,9 +93,62 @@ export default function AIChat({ seoReportId }: { seoReportId: string }) {
                       return (
                         <div
                           key={`${message.id}-${i}`}
-                          className="whitespace-pre-wrap leading-relaxed"
+                          className="leading-relaxed"
                         >
-                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          <ReactMarkdown
+                            remarkPlugins={[remarkGfm]}
+                            components={{
+                              p: ({ children }) => (
+                                <p className="mb-3 last:mb-0">{children}</p>
+                              ),
+                              ul: ({ children }) => (
+                                <ul className="mb-3 pl-4 space-y-1">
+                                  {children}
+                                </ul>
+                              ),
+                              ol: ({ children }) => (
+                                <ol className="mb-3 pl-4 space-y-1">
+                                  {children}
+                                </ol>
+                              ),
+                              li: ({ children }) => (
+                                <li className="text-sm">{children}</li>
+                              ),
+                              h1: ({ children }) => (
+                                <h1 className="text-lg font-semibold mb-2 mt-4 first:mt-0">
+                                  {children}
+                                </h1>
+                              ),
+                              h2: ({ children }) => (
+                                <h2 className="text-base font-semibold mb-2 mt-3 first:mt-0">
+                                  {children}
+                                </h2>
+                              ),
+                              h3: ({ children }) => (
+                                <h3 className="text-sm font-semibold mb-1 mt-2 first:mt-0">
+                                  {children}
+                                </h3>
+                              ),
+                              strong: ({ children }) => (
+                                <strong className="font-semibold">
+                                  {children}
+                                </strong>
+                              ),
+                              em: ({ children }) => (
+                                <em className="italic">{children}</em>
+                              ),
+                              code: ({ children }) => (
+                                <code className="bg-gray-100 px-1 py-0.5 rounded text-xs font-mono">
+                                  {children}
+                                </code>
+                              ),
+                              pre: ({ children }) => (
+                                <pre className="bg-gray-100 p-2 rounded text-xs overflow-x-auto mb-3">
+                                  {children}
+                                </pre>
+                              ),
+                            }}
+                          >
                             {part.text}
                           </ReactMarkdown>
                         </div>

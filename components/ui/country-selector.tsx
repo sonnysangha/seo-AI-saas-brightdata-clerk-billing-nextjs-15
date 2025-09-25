@@ -93,7 +93,7 @@ export function CountrySelector({
         <Button
           variant="outline"
           disabled={disabled}
-          className="h-12 px-4 justify-between min-w-[140px]"
+          className="h-14 px-4 justify-between min-w-[140px] border-2 border-blue-200 dark:border-blue-800 hover:border-blue-500 dark:hover:border-blue-400 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm shadow-sm"
         >
           <div className="flex items-center gap-2">
             <span className="text-lg">{selectedCountry.flag}</span>

@@ -196,6 +196,7 @@ export const retryJob = mutation({
 export const canUseSmartRetry = query({
   args: {
     jobId: v.id("scrapingJobs"),
+    userId: v.string(),
   },
   returns: v.object({
     canRetryAnalysisOnly: v.boolean(),
@@ -203,13 +204,8 @@ export const canUseSmartRetry = query({
     hasAnalysisPrompt: v.boolean(),
   }),
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
-
     const job = await ctx.db.get(args.jobId);
-    if (!job || job.userId !== identity.subject) {
+    if (!job || job.userId !== args.userId) {
       return {
         canRetryAnalysisOnly: false,
         hasScrapingData: false,
