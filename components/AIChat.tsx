@@ -40,7 +40,7 @@ export default function AIChat({ seoReportId }: { seoReportId: string }) {
     <>
       {/* Chat Widget */}
       {isExpanded && (
-        <div className="fixed bottom-20 right-6 z-50 w-96 h-[500px] bg-white rounded-3xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden">
+        <div className="fixed bottom-20 right-6 z-50 w-[500px] h-[600px] bg-white rounded-3xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between p-5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-t-3xl">
             <div className="flex items-center gap-3">
@@ -89,6 +89,39 @@ export default function AIChat({ seoReportId }: { seoReportId: string }) {
                   )}
                 >
                   {message.parts.map((part, i) => {
+                    if (part.type === "tool-web_search") {
+                      switch (part.state) {
+                        case "input-streaming":
+                        case "input-available":
+                          return (
+                            <div
+                              key={`${message.id}-${i}`}
+                              className="flex items-center gap-2 text-sm text-gray-600"
+                            >
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                              <span>Searching the web...</span>
+                            </div>
+                          );
+                        case "output-available":
+                          return (
+                            <div
+                              key={`${message.id}-${i}`}
+                              className="text-sm text-green-600 font-medium"
+                            >
+                              ✓ Finished web search
+                            </div>
+                          );
+                        case "output-error":
+                          return (
+                            <div
+                              key={`${message.id}-${i}`}
+                              className="text-sm text-red-600"
+                            >
+                              ✗ Web search failed: {part.errorText}
+                            </div>
+                          );
+                      }
+                    }
                     if (part.type === "text") {
                       return (
                         <div
@@ -113,6 +146,16 @@ export default function AIChat({ seoReportId }: { seoReportId: string }) {
                               ),
                               li: ({ children }) => (
                                 <li className="text-sm">{children}</li>
+                              ),
+                              a: ({ children, href }) => (
+                                <a
+                                  href={href}
+                                  className="text-indigo-600 underline cursor-pointer"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  {children}
+                                </a>
                               ),
                               h1: ({ children }) => (
                                 <h1 className="text-lg font-semibold mb-2 mt-4 first:mt-0">
