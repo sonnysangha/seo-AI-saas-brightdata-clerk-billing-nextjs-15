@@ -27,23 +27,28 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-950 dark:via-blue-950 dark:to-purple-950">
       {/* Hero Section */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-accent/5" />
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(120,119,198,0.3),transparent_50%)]" />
         <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-32 lg:px-8">
           <div className="text-center">
-            <Badge className="mb-4 bg-primary/10 text-primary border-primary/20 hover:bg-primary/20">
-              <Sparkles className="w-3 h-3 mr-1" />
+            <Badge className="mb-4 bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-700 dark:text-blue-300 border-blue-500/30 hover:from-blue-500/30 hover:to-purple-500/30">
+              <Sparkles className="w-3 h-3 mr-1 text-yellow-500" />
               Powered by Bright Data & OpenAI
             </Badge>
 
-            <h1 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl bg-gradient-to-r from-foreground via-foreground to-muted-foreground bg-clip-text text-transparent">
-              Generate Beautiful
-              <span className="block bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
+              <span className="bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 dark:from-white dark:via-blue-100 dark:to-white bg-clip-text text-transparent">
+                Generate Beautiful
+              </span>
+              <span className="block bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
                 SEO Reports
               </span>
-              in Seconds
+              <span className="bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 dark:from-white dark:via-blue-100 dark:to-white bg-clip-text text-transparent">
+                in Seconds
+              </span>
             </h1>
 
             <p className="mt-6 max-w-2xl mx-auto text-lg sm:text-xl text-muted-foreground leading-relaxed">
@@ -60,7 +65,7 @@ export default function Home() {
                 <SignInButton mode="modal" forceRedirectUrl="/dashboard">
                   <Button
                     size="lg"
-                    className="text-base px-8 py-6 shadow-lg hover:shadow-xl transition-all duration-300 group"
+                    className="text-base px-8 py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl hover:shadow-blue-500/25 transition-all duration-300 group border-0"
                   >
                     <Search className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" />
                     Generate My Report
@@ -73,7 +78,7 @@ export default function Home() {
                 <Link href="/dashboard">
                   <Button
                     size="lg"
-                    className="text-base px-8 py-6 shadow-lg hover:shadow-xl transition-all duration-300 group"
+                    className="text-base px-8 py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl hover:shadow-blue-500/25 transition-all duration-300 group border-0"
                   >
                     <Search className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" />
                     Generate My Report
@@ -101,14 +106,16 @@ export default function Home() {
 
           <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
             {/* Starter Plan Card */}
-            <Card className="relative overflow-hidden border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-xl group">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/10 to-transparent rounded-full -translate-y-16 translate-x-16" />
+            <Card className="relative overflow-hidden border-2 border-blue-200 dark:border-blue-800 hover:border-blue-400 dark:hover:border-blue-600 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10 group bg-gradient-to-br from-blue-50/50 to-cyan-50/50 dark:from-blue-950/50 dark:to-cyan-950/50">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-cyan-400/20 rounded-full -translate-y-16 translate-x-16" />
               <CardHeader className="relative">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                  <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 text-white">
                     <BarChart3 className="w-6 h-6" />
                   </div>
-                  <Badge variant="secondary">Starter</Badge>
+                  <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300">
+                    Starter
+                  </Badge>
                 </div>
                 <CardTitle className="text-2xl">Full SEO Reports</CardTitle>
                 <CardDescription className="text-base">
@@ -139,18 +146,20 @@ export default function Home() {
             </Card>
 
             {/* Pro Plan Card */}
-            <Card className="relative overflow-hidden border-2 border-primary/50 hover:border-primary transition-all duration-300 hover:shadow-2xl group bg-gradient-to-br from-primary/5 to-background">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/20 to-transparent rounded-full -translate-y-16 translate-x-16" />
-              <Badge className="absolute top-4 right-4 bg-primary text-primary-foreground">
-                <Sparkles className="w-3 h-3 mr-1" />
+            <Card className="relative overflow-hidden border-2 border-purple-300 dark:border-purple-700 hover:border-purple-500 dark:hover:border-purple-500 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/20 group bg-gradient-to-br from-purple-50/80 via-pink-50/80 to-orange-50/80 dark:from-purple-950/80 dark:via-pink-950/80 dark:to-orange-950/80">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-400/30 via-pink-400/30 to-orange-400/30 rounded-full -translate-y-16 translate-x-16" />
+              <Badge className="absolute top-4 right-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0">
+                <Sparkles className="w-3 h-3 mr-1 text-yellow-300" />
                 Popular
               </Badge>
               <CardHeader className="relative">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 rounded-lg bg-primary text-primary-foreground">
+                  <div className="p-2 rounded-lg bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 text-white">
                     <MessageSquare className="w-6 h-6" />
                   </div>
-                  <Badge>Pro</Badge>
+                  <Badge className="bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 hover:from-purple-200 hover:to-pink-200 dark:from-purple-900 dark:to-pink-900 dark:text-purple-300 border-0">
+                    Pro
+                  </Badge>
                 </div>
                 <CardTitle className="text-2xl">
                   Chat With Your Report
@@ -192,7 +201,7 @@ export default function Home() {
       </section>
 
       {/* Pricing Section */}
-      <section className="py-20 sm:py-32 bg-muted/30">
+      <section className="py-20 sm:py-32 bg-gradient-to-r from-emerald-50/50 via-blue-50/50 to-purple-50/50 dark:from-emerald-950/50 dark:via-blue-950/50 dark:to-purple-950/50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
@@ -206,11 +215,13 @@ export default function Home() {
 
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Starter Pricing */}
-            <Card className="hover:shadow-lg transition-all duration-300">
+            <Card className="hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-300 border-blue-200 dark:border-blue-800 bg-gradient-to-br from-blue-50/80 to-cyan-50/80 dark:from-blue-950/80 dark:to-cyan-950/80">
               <CardHeader className="text-center pb-8">
                 <CardTitle className="text-xl mb-2">Starter</CardTitle>
                 <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-4xl font-bold">$19</span>
+                  <span className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                    $19
+                  </span>
                   <span className="text-muted-foreground">/month</span>
                 </div>
                 <CardDescription className="mt-2">
@@ -233,7 +244,10 @@ export default function Home() {
                   </div>
                 </div>
                 <Link href="/pricing">
-                  <Button className="w-full mt-6" size="lg">
+                  <Button
+                    className="w-full mt-6 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 border-0"
+                    size="lg"
+                  >
                     Subscribe to Starter
                   </Button>
                 </Link>
@@ -241,14 +255,16 @@ export default function Home() {
             </Card>
 
             {/* Pro Pricing */}
-            <Card className="border-primary hover:shadow-xl transition-all duration-300 relative">
-              <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground">
+            <Card className="border-2 border-purple-300 dark:border-purple-700 hover:border-purple-500 hover:shadow-xl hover:shadow-purple-500/20 transition-all duration-300 relative bg-gradient-to-br from-purple-50/80 via-pink-50/80 to-rose-50/80 dark:from-purple-950/80 dark:via-pink-950/80 dark:to-rose-950/80">
+              <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0">
                 Most Popular
               </Badge>
               <CardHeader className="text-center pb-8">
                 <CardTitle className="text-xl mb-2">Pro</CardTitle>
                 <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-4xl font-bold">$49</span>
+                  <span className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 bg-clip-text text-transparent">
+                    $49
+                  </span>
                   <span className="text-muted-foreground">/month</span>
                 </div>
                 <CardDescription className="mt-2">
@@ -273,7 +289,10 @@ export default function Home() {
                   </div>
                 </div>
                 <Link href="/pricing">
-                  <Button className="w-full mt-6" size="lg">
+                  <Button
+                    className="w-full mt-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 border-0"
+                    size="lg"
+                  >
                     Subscribe to Pro
                   </Button>
                 </Link>
@@ -328,50 +347,6 @@ export default function Home() {
               <span className="text-sm text-green-700 dark:text-green-300 font-medium">
                 Enterprise-grade security & 99.9% uptime guaranteed
               </span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Final CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-primary/10 via-background to-accent/10">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
-          <div className="space-y-6">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-              Start Generating SEO Insights Today
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Join thousands of marketers who trust our platform to deliver
-              actionable SEO insights. Get started in less than 2 minutes.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-              <Unauthenticated>
-                <SignInButton mode="modal">
-                  <Button
-                    size="lg"
-                    className="text-base px-8 py-6 shadow-lg hover:shadow-xl transition-all duration-300 group"
-                  >
-                    <TrendingUp className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
-                    Get Started Free
-                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </SignInButton>
-              </Unauthenticated>
-
-              <Authenticated>
-                <Button
-                  size="lg"
-                  className="text-base px-8 py-6 shadow-lg hover:shadow-xl transition-all duration-300 group"
-                >
-                  <TrendingUp className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
-                  Create Your First Report
-                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Authenticated>
-
-              <p className="text-sm text-muted-foreground">
-                No credit card required • Cancel anytime
-              </p>
             </div>
           </div>
         </div>
