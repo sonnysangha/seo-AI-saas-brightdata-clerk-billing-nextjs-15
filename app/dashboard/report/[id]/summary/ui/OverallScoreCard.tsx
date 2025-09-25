@@ -11,8 +11,28 @@ interface OverallScoreCardProps {
 }
 
 export function OverallScoreCard({ seoReport }: OverallScoreCardProps) {
-  const fmt = (n: number | undefined | null) =>
-    typeof n === "number" && !Number.isNaN(n) ? n.toLocaleString() : "—";
+  const formatNumber = (num: number | undefined | null) => {
+    if (!num || isNaN(num)) return "—";
+    return num.toLocaleString();
+  };
+
+  // Calculate the actual score for gradient logic
+  const score = Math.round(
+    (seoReport?.summary?.overall_score ?? 0) < 1
+      ? (seoReport?.summary?.overall_score ?? 0) * 100
+      : (seoReport?.summary?.overall_score ?? 0)
+  );
+
+  // Determine gradient color based on score
+  const getScoreGradient = (score: number) => {
+    if (score >= 70) {
+      return "bg-gradient-to-r from-gray-400 to-green-600";
+    } else if (score >= 50) {
+      return "bg-gradient-to-r from-gray-400 to-yellow-500";
+    } else {
+      return "bg-gradient-to-r from-gray-400 to-red-500";
+    }
+  };
 
   return (
     <Card className="border-none shadow-2xl bg-gradient-to-br from-primary/5 via-primary/8 to-primary/12 relative overflow-hidden">
@@ -27,7 +47,7 @@ export function OverallScoreCard({ seoReport }: OverallScoreCardProps) {
             <p className="text-lg text-muted-foreground leading-relaxed">
               Based on comprehensive analysis of{" "}
               <span className="font-semibold text-foreground">
-                {fmt(seoReport?.meta?.data_sources_count)}
+                {formatNumber(seoReport?.meta?.data_sources_count)}
               </span>{" "}
               sources across multiple domains and platforms
             </p>
@@ -44,12 +64,10 @@ export function OverallScoreCard({ seoReport }: OverallScoreCardProps) {
           </div>
           <div className="text-center lg:text-right">
             <div className="relative inline-block">
-              <div className="text-8xl lg:text-9xl font-bold bg-gradient-to-br from-primary via-primary to-primary/80 bg-clip-text text-transparent">
-                {Math.round(
-                  (seoReport?.summary?.overall_score ?? 0) < 1
-                    ? (seoReport?.summary?.overall_score ?? 0) * 100
-                    : (seoReport?.summary?.overall_score ?? 0)
-                )}
+              <div
+                className={`text-8xl lg:text-9xl font-bold ${getScoreGradient(score)} bg-clip-text text-transparent`}
+              >
+                {score}
               </div>
               <div className="absolute -bottom-2 right-0 text-2xl font-bold text-muted-foreground">
                 /100
