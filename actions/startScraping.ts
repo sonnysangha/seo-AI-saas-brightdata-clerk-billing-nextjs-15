@@ -5,6 +5,7 @@ import { buildPerplexityPrompt } from "@/prompts/perplexity";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { auth } from "@clerk/nextjs/server";
 
 if (!process.env.BRIGHTDATA_API_KEY) {
   throw new Error("BRIGHTDATA_API_KEY is not set");
@@ -15,6 +16,12 @@ const startScraping = async (
   existingJobId?: string,
   country: string = "US"
 ) => {
+  const { userId } = await auth();
+
+  if (!userId) {
+    throw new Error("User ID is required");
+  }
+
   // Initialize Convex client
   const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
@@ -58,6 +65,7 @@ const startScraping = async (
     // Create a new job record in the database
     jobId = await convex.mutation(api.scrapingJobs.createScrapingJob, {
       originalPrompt: prompt,
+      userId: userId,
     });
   }
 

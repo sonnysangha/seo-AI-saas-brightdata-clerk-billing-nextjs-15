@@ -3,6 +3,9 @@ import { v } from "convex/values";
 
 export default defineSchema({
   scrapingJobs: defineTable({
+    // User association
+    userId: v.string(), // Clerk user ID
+
     // User input
     originalPrompt: v.string(),
     // Saved GPT analysis prompt for debugging
@@ -28,5 +31,7 @@ export default defineSchema({
     completedAt: v.optional(v.number()),
   })
     .index("by_status", ["status"])
-    .index("by_created_at", ["createdAt"]),
+    .index("by_created_at", ["createdAt"])
+    .index("by_user", ["userId"])
+    .index("by_user_and_created_at", ["userId", "createdAt"]),
 });

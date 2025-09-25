@@ -7,3 +7,4 @@ export { RecommendationsCard } from "./RecommendationsCard";
 export { KeywordsAnalysisGrid } from "./KeywordsAnalysisGrid";
 export { KeyInsightsGrid } from "./KeyInsightsGrid";
 export { AdditionalAnalysisGrid } from "./AdditionalAnalysisGrid";
+export { AIChatUpsellCard } from "./AIChatUpsellCard";

@@ -12,9 +12,10 @@ import {
 } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Plus, BarChart3, FileText, Sparkles } from "lucide-react";
+import { Plus, BarChart3, FileText, Sparkles, Loader2 } from "lucide-react";
 import ReportsTable from "@/components/ReportsTable";
 import { CountrySelector } from "@/components/ui/country-selector";
+import { Authenticated, AuthLoading } from "convex/react";
 
 function Dashboard() {
   const [prompt, setPrompt] = useState("");
@@ -110,7 +111,14 @@ function Dashboard() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <ReportsTable />
+              <Authenticated>
+                <ReportsTable />
+              </Authenticated>
+              <AuthLoading>
+                <div className="flex items-center justify-center">
+                  <Loader2 className="w-6 h-6 animate-spin mr-2" />
+                </div>
+              </AuthLoading>
             </CardContent>
           </Card>
         </div>

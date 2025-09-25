@@ -18,24 +18,26 @@ interface KeywordsAnalysisGridProps {
 
 export function KeywordsAnalysisGrid({ seoReport }: KeywordsAnalysisGridProps) {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 min-w-0">
       {/* Content Keywords */}
-      <Card className="border bg-gradient-to-br from-card to-card/95">
-        <CardHeader className="pb-6">
-          <div className="flex items-center gap-3">
-            <div className="p-3 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/50 dark:to-cyan-900/50">
-              <Search className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+      <Card className="border bg-gradient-to-br from-card to-card/95 min-w-0 w-full">
+        <CardHeader className="pb-4 sm:pb-6">
+          <div className="flex items-start sm:items-center gap-3">
+            <div className="p-2 sm:p-3 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/50 dark:to-cyan-900/50 flex-shrink-0">
+              <Search className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 dark:text-blue-400" />
             </div>
-            <div>
-              <CardTitle className="text-2xl">Content Keywords</CardTitle>
-              <CardDescription className="text-base">
+            <div className="min-w-0 flex-1">
+              <CardTitle className="text-xl sm:text-2xl leading-tight">
+                Content Keywords
+              </CardTitle>
+              <CardDescription className="text-sm sm:text-base mt-1">
                 Keywords derived from content analysis with search intent
               </CardDescription>
             </div>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="grid gap-6">
+        <CardContent className="min-w-0">
+          <div className="grid gap-4 sm:gap-6">
             {(seoReport?.keywords?.content_keywords || []).map(
               (keyword, index) => {
                 const intentConfig = {
@@ -84,21 +86,21 @@ export function KeywordsAnalysisGrid({ seoReport }: KeywordsAnalysisGridProps) {
                 return (
                   <div
                     key={index}
-                    className={`p-6 rounded-xl border ${config.bgClass} ${config.borderClass} hover:shadow-lg transition-all duration-300 group`}
+                    className={`p-3 sm:p-4 md:p-6 rounded-xl border ${config.bgClass} ${config.borderClass} hover:shadow-lg transition-all duration-300 group min-w-0`}
                   >
-                    <div className="flex items-start gap-4">
+                    <div className="flex items-start gap-3 sm:gap-4">
                       <div
                         className={`p-2 rounded-full bg-white/80 dark:bg-black/20 ${config.iconClass} flex-shrink-0`}
                       >
-                        <IconComponent className="h-5 w-5" />
+                        <IconComponent className="h-4 w-4 sm:h-5 sm:w-5" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between mb-3">
-                          <h4 className="font-bold text-lg leading-tight">
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-3 mb-3">
+                          <h4 className="font-bold text-base sm:text-lg leading-tight break-words">
                             {keyword.keyword}
                           </h4>
                           <Badge
-                            className={`${config.badgeClass} border-0 text-sm px-3 py-1 capitalize`}
+                            className={`${config.badgeClass} border-0 text-xs sm:text-sm px-2 sm:px-3 py-1 capitalize self-start`}
                           >
                             {keyword.intent || "unknown"} Intent
                           </Badge>
@@ -111,23 +113,23 @@ export function KeywordsAnalysisGrid({ seoReport }: KeywordsAnalysisGridProps) {
                             {keyword.evidence.map((evidence, evidenceIndex) => (
                               <div
                                 key={evidenceIndex}
-                                className="bg-white/50 dark:bg-black/10 rounded-lg p-3 border border-white/20"
+                                className="bg-white/50 dark:bg-black/10 rounded-lg p-2 sm:p-3 border border-white/20 min-w-0"
                               >
-                                <p className="text-sm text-muted-foreground mb-3 italic leading-relaxed">
+                                <p className="text-sm text-muted-foreground mb-3 italic leading-relaxed break-words">
                                   &ldquo;{evidence.quote}&rdquo;
                                 </p>
-                                <div className="flex items-center justify-between">
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                                   <a
                                     href={evidence.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-primary hover:underline truncate flex-1 mr-3 font-medium text-sm"
+                                    className="text-primary hover:underline font-medium text-sm break-all min-w-0"
                                   >
                                     {new URL(evidence.url).hostname}
                                   </a>
                                   <Badge
                                     variant="outline"
-                                    className="text-xs bg-white/80 dark:bg-black/20"
+                                    className="text-xs bg-white/80 dark:bg-black/20 self-start sm:self-center flex-shrink-0"
                                   >
                                     {Math.round(evidence.relevance_score * 100)}
                                     % relevance
@@ -157,22 +159,24 @@ export function KeywordsAnalysisGrid({ seoReport }: KeywordsAnalysisGridProps) {
       </Card>
 
       {/* Keyword Themes */}
-      <Card className="border bg-gradient-to-br from-card to-card/95">
-        <CardHeader className="pb-6">
-          <div className="flex items-center gap-3">
-            <div className="p-3 rounded-full bg-gradient-to-br from-orange-100 to-amber-100 dark:from-orange-900/50 dark:to-amber-900/50">
-              <Target className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+      <Card className="border bg-gradient-to-br from-card to-card/95 min-w-0 w-full">
+        <CardHeader className="pb-4 sm:pb-6">
+          <div className="flex items-start sm:items-center gap-3">
+            <div className="p-2 sm:p-3 rounded-full bg-gradient-to-br from-orange-100 to-amber-100 dark:from-orange-900/50 dark:to-amber-900/50 flex-shrink-0">
+              <Target className="h-5 w-5 sm:h-6 sm:w-6 text-orange-600 dark:text-orange-400" />
             </div>
-            <div>
-              <CardTitle className="text-2xl">Keyword Themes</CardTitle>
-              <CardDescription className="text-base">
+            <div className="min-w-0 flex-1">
+              <CardTitle className="text-xl sm:text-2xl leading-tight">
+                Keyword Themes
+              </CardTitle>
+              <CardDescription className="text-sm sm:text-base mt-1">
                 Grouped keywords by thematic relevance and context
               </CardDescription>
             </div>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="grid gap-6">
+        <CardContent className="min-w-0">
+          <div className="grid gap-4 sm:gap-6">
             {(seoReport?.keywords?.keyword_themes || []).map((theme, index) => {
               const themeConfig = {
                 bgClass:
@@ -186,21 +190,21 @@ export function KeywordsAnalysisGrid({ seoReport }: KeywordsAnalysisGridProps) {
               return (
                 <div
                   key={index}
-                  className={`p-6 rounded-xl border ${themeConfig.bgClass} ${themeConfig.borderClass} hover:shadow-lg transition-all duration-300 group`}
+                  className={`p-3 sm:p-4 md:p-6 rounded-xl border ${themeConfig.bgClass} ${themeConfig.borderClass} hover:shadow-lg transition-all duration-300 group min-w-0`}
                 >
-                  <div className="flex items-start gap-4">
+                  <div className="flex items-start gap-3 sm:gap-4">
                     <div
                       className={`p-2 rounded-full bg-white/80 dark:bg-black/20 ${themeConfig.iconClass} flex-shrink-0`}
                     >
-                      <Target className="h-5 w-5" />
+                      <Target className="h-4 w-4 sm:h-5 sm:w-5" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between mb-4">
-                        <h4 className="font-bold text-lg leading-tight">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-3 mb-4">
+                        <h4 className="font-bold text-base sm:text-lg leading-tight break-words">
                           {theme.theme}
                         </h4>
                         <Badge
-                          className={`${themeConfig.badgeClass} border-0 text-sm px-3 py-1`}
+                          className={`${themeConfig.badgeClass} border-0 text-xs sm:text-sm px-2 sm:px-3 py-1 self-start`}
                         >
                           {theme.keywords.length} Keywords
                         </Badge>
@@ -211,12 +215,12 @@ export function KeywordsAnalysisGrid({ seoReport }: KeywordsAnalysisGridProps) {
                         <h5 className="text-sm font-medium text-muted-foreground mb-2">
                           Related Keywords:
                         </h5>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-1.5 sm:gap-2">
                           {theme.keywords.map((kw, kwIndex) => (
                             <Badge
                               key={kwIndex}
                               variant="secondary"
-                              className="text-xs bg-white/60 dark:bg-black/20 text-orange-700 dark:text-orange-300"
+                              className="text-xs bg-white/60 dark:bg-black/20 text-orange-700 dark:text-orange-300 break-words max-w-full"
                             >
                               {kw}
                             </Badge>
@@ -233,23 +237,23 @@ export function KeywordsAnalysisGrid({ seoReport }: KeywordsAnalysisGridProps) {
                           {theme.evidence.map((evidence, evidenceIndex) => (
                             <div
                               key={evidenceIndex}
-                              className="bg-white/50 dark:bg-black/10 rounded-lg p-3 border border-white/20"
+                              className="bg-white/50 dark:bg-black/10 rounded-lg p-2 sm:p-3 border border-white/20 min-w-0"
                             >
-                              <p className="text-sm text-muted-foreground mb-3 italic leading-relaxed">
+                              <p className="text-sm text-muted-foreground mb-3 italic leading-relaxed break-words">
                                 &ldquo;{evidence.quote}&rdquo;
                               </p>
-                              <div className="flex items-center justify-between">
+                              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                                 <a
                                   href={evidence.url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-primary hover:underline truncate flex-1 mr-3 font-medium text-sm"
+                                  className="text-primary hover:underline font-medium text-sm break-all min-w-0"
                                 >
                                   {new URL(evidence.url).hostname}
                                 </a>
                                 <Badge
                                   variant="outline"
-                                  className="text-xs bg-white/80 dark:bg-black/20"
+                                  className="text-xs bg-white/80 dark:bg-black/20 self-start sm:self-center flex-shrink-0"
                                 >
                                   {Math.round(evidence.relevance_score * 100)}%
                                   relevance

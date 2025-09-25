@@ -5,10 +5,15 @@ import { seoReportSchema } from "@/lib/seo-schema";
 export const createScrapingJob = mutation({
   args: {
     originalPrompt: v.string(),
+    userId: v.optional(v.string()),
   },
   returns: v.id("scrapingJobs"),
   handler: async (ctx, args) => {
+    if (!args.userId) {
+      throw new Error("User ID is required");
+    }
     const jobId = await ctx.db.insert("scrapingJobs", {
+      userId: args.userId,
       originalPrompt: args.originalPrompt,
       status: "pending",
       createdAt: Date.now(),
@@ -101,6 +106,7 @@ export const getJobById = query({
     v.object({
       _id: v.id("scrapingJobs"),
       _creationTime: v.number(),
+      userId: v.string(),
       originalPrompt: v.string(),
       analysisPrompt: v.optional(v.string()),
       snapshotId: v.optional(v.string()),
@@ -154,6 +160,8 @@ export const failJob = mutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
+    // Note: This mutation is used by internal processes and webhooks
+    // so it doesn't require authentication
     await ctx.db.patch(args.jobId, {
       status: "failed",
       error: args.error,
@@ -195,8 +203,13 @@ export const canUseSmartRetry = query({
     hasAnalysisPrompt: v.boolean(),
   }),
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
     const job = await ctx.db.get(args.jobId);
-    if (!job) {
+    if (!job || job.userId !== identity.subject) {
       return {
         canRetryAnalysisOnly: false,
         hasScrapingData: false,
@@ -239,11 +252,13 @@ export const resetJobForAnalysisRetry = internalMutation({
 export const getJobBySnapshotId = query({
   args: {
     snapshotId: v.string(),
+    userId: v.string(),
   },
   returns: v.union(
     v.object({
       _id: v.id("scrapingJobs"),
       _creationTime: v.number(),
+      userId: v.string(),
       originalPrompt: v.string(),
       analysisPrompt: v.optional(v.string()),
       snapshotId: v.optional(v.string()),
@@ -265,8 +280,14 @@ export const getJobBySnapshotId = query({
   handler: async (ctx, args) => {
     const job = await ctx.db
       .query("scrapingJobs")
-      .filter((q) => q.eq(q.field("snapshotId"), args.snapshotId))
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("snapshotId"), args.snapshotId),
+          q.eq(q.field("userId"), args.userId)
+        )
+      )
       .first();
+
     if (job && job.seoReport !== undefined) {
       const result = seoReportSchema.safeParse(job.seoReport);
       if (!result.success) {
@@ -283,6 +304,7 @@ export const getUserJobs = query({
     v.object({
       _id: v.id("scrapingJobs"),
       _creationTime: v.number(),
+      userId: v.string(),
       originalPrompt: v.string(),
       analysisPrompt: v.optional(v.string()),
       snapshotId: v.optional(v.string()),
@@ -301,11 +323,20 @@ export const getUserJobs = query({
     })
   ),
   handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
     const jobs = await ctx.db
       .query("scrapingJobs")
-      .withIndex("by_created_at")
+      .withIndex("by_user_and_created_at", (q) =>
+        q.eq("userId", identity.subject)
+      )
       .order("desc")
       .collect();
+
     for (const job of jobs) {
       if (job.seoReport !== undefined) {
         const result = seoReportSchema.safeParse(job.seoReport);

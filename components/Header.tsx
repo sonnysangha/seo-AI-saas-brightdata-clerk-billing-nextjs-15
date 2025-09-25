@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { LogIn, Loader2 } from "lucide-react";
+import { LogIn, Loader2, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import { UserButton, SignInButton } from "@clerk/nextjs";
@@ -35,6 +35,13 @@ function Header() {
         </div>
 
         <div className="flex flex-1 items-center justify-end gap-1">
+          <Link href="/dashboard">
+            <Button variant="outline">
+              <BarChart3 className="size-4" />
+              <span className="sr-only md:not-sr-only md:ml-2">Dashboard</span>
+            </Button>
+          </Link>
+
           <ThemeToggle />
 
           <AuthLoading>

@@ -32,9 +32,14 @@ import {
   getStatusMessage,
   formatDateTime,
 } from "@/lib/status-utils";
+import { useUser } from "@clerk/nextjs";
 
 function ReportStatus({ id }: { id: string }) {
-  const job = useQuery(api.scrapingJobs.getJobBySnapshotId, { snapshotId: id });
+  const { user } = useUser();
+  const job = useQuery(api.scrapingJobs.getJobBySnapshotId, {
+    snapshotId: id,
+    userId: user?.id || "skip",
+  });
   const [isPending, startTransition] = useTransition();
   const [retryError, setRetryError] = useState<string | null>(null);
   const router = useRouter();

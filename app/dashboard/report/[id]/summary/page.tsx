@@ -15,16 +15,22 @@ import {
   RecommendationsCard,
   KeyMetricsGrid,
   OverallScoreCard,
+  AIChatUpsellCard,
 } from "./ui";
+import { Protect, useUser } from "@clerk/nextjs";
+import AIChat from "@/components/AIChat";
 
 interface ReportSummaryProps {
   params: Promise<{ id: string }>;
 }
 
 export default function ReportSummary({ params }: ReportSummaryProps) {
-  const resolvedParams = React.use(params);
+  const { id } = React.use(params);
+  const { user } = useUser();
+
   const job = useQuery(api.scrapingJobs.getJobBySnapshotId, {
-    snapshotId: resolvedParams.id,
+    snapshotId: id,
+    userId: user?.id || "skip",
   });
 
   const seoReport = job?.seoReport as SeoReport | undefined;
@@ -72,11 +78,15 @@ export default function ReportSummary({ params }: ReportSummaryProps) {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       <SummaryHeader seoReport={seoReport} />
 
-      <div className="w-full max-w-7xl mx-auto px-8 py-12 space-y-12">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12 space-y-8 lg:space-y-12">
         <OverallScoreCard seoReport={seoReport} />
         <KeyMetricsGrid seoReport={seoReport} />
 
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+        <Protect plan="pro" fallback={<AIChatUpsellCard />}>
+          <AIChat seoReportId={id} />
+        </Protect>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
           <SourceDistributionChart seoReport={seoReport} />
           <CompetitorStrengthCard seoReport={seoReport} />
         </div>

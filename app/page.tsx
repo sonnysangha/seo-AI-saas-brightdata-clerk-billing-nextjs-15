@@ -57,7 +57,7 @@ export default function Home() {
 
             <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Unauthenticated>
-                <SignInButton mode="modal">
+                <SignInButton mode="modal" forceRedirectUrl="/dashboard">
                   <Button
                     size="lg"
                     className="text-base px-8 py-6 shadow-lg hover:shadow-xl transition-all duration-300 group"
@@ -81,14 +81,6 @@ export default function Home() {
                   </Button>
                 </Link>
               </Authenticated>
-
-              <Button
-                variant="outline"
-                size="lg"
-                className="text-base px-8 py-6"
-              >
-                View Sample Report
-              </Button>
             </div>
           </div>
         </div>
@@ -229,10 +221,6 @@ export default function Home() {
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
                     <CheckCircle className="w-4 h-4 text-green-600" />
-                    <span className="text-sm">10 SEO reports per month</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
                     <span className="text-sm">Bright Data SERP scraping</span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -244,18 +232,11 @@ export default function Home() {
                     <span className="text-sm">Email support</span>
                   </div>
                 </div>
-                <Unauthenticated>
-                  <SignInButton mode="modal">
-                    <Button className="w-full mt-6" size="lg">
-                      Subscribe to Starter
-                    </Button>
-                  </SignInButton>
-                </Unauthenticated>
-                <Authenticated>
+                <Link href="/pricing">
                   <Button className="w-full mt-6" size="lg">
                     Subscribe to Starter
                   </Button>
-                </Authenticated>
+                </Link>
               </CardContent>
             </Card>
 
@@ -278,10 +259,6 @@ export default function Home() {
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
                     <CheckCircle className="w-4 h-4 text-green-600" />
-                    <span className="text-sm">Unlimited SEO reports</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
                     <span className="text-sm">Everything in Starter</span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -295,18 +272,11 @@ export default function Home() {
                     <span className="text-sm">Priority support</span>
                   </div>
                 </div>
-                <Unauthenticated>
-                  <SignInButton mode="modal">
-                    <Button className="w-full mt-6" size="lg">
-                      Subscribe to Pro
-                    </Button>
-                  </SignInButton>
-                </Unauthenticated>
-                <Authenticated>
+                <Link href="/pricing">
                   <Button className="w-full mt-6" size="lg">
                     Subscribe to Pro
                   </Button>
-                </Authenticated>
+                </Link>
               </CardContent>
             </Card>
           </div>

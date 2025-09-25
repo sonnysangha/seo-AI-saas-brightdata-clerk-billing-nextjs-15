@@ -62,7 +62,7 @@ export const runAnalysis = internalAction({
       console.log("Prompt saved for job:", args.jobId);
 
       const { object: seoReport } = await generateObject({
-        model: openai("gpt-5"),
+        model: openai("gpt-4o"),
         system: systemPrompt(),
         prompt: analysisPrompt,
         schema: seoReportSchema,
