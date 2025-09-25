@@ -20,7 +20,6 @@ import {
   CheckCircle,
   ArrowRight,
   Sparkles,
-  TrendingUp,
   Globe,
 } from "lucide-react";
 import Link from "next/link";
